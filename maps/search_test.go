@@ -26,11 +26,13 @@ func TestDict(t *testing.T) {
 	t.Run("add new word", func(t *testing.T) {
 		err := dict.Add("new", "word")
 		assertError(t, err, nil)
+		assertDefinition(t, dict, "new", "word")
 	})
 
 	t.Run("duplicate word", func(t *testing.T) {
 		err := dict.Add("new", "word")
 		assertError(t, err, WordAlreadyExistsException)
+		assertDefinition(t, dict, "new", "word")
 	})
 
 	t.Run("found word", func(t *testing.T) {
@@ -45,6 +47,43 @@ func TestDict(t *testing.T) {
 
 		assertError(t, err, WordNotFoundException)
 	})
+}
+
+func TestUpdate(t *testing.T) {
+	key := "test"
+	value := "map old"
+	dict := Dict{}
+	dict.Add(key, value)
+
+	newValue := "map new"
+	dict.Update(key, newValue)
+	assertDefinition(t, dict, key, newValue)
+}
+
+func TestDelete(t *testing.T) {
+	key := "test"
+	value := "value"
+	dict := Dict{}
+	dict.Add(key, value)
+
+	dict.Delete(key)
+
+	_, err := dict.Search(key)
+	assertError(t, err, WordNotFoundException)
+}
+
+func assertDefinition(t testing.TB, dict Dict, key, want string) {
+	t.Helper()
+
+	got, err := dict.Search(key)
+
+	if err != nil {
+		t.Fatal("should find the word:", err)
+	}
+
+	if got != want {
+		t.Errorf("got %q but want %q", got, want)
+	}
 }
 
 func assertError(t testing.TB, got, want error) {

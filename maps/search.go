@@ -1,13 +1,15 @@
 package maps
 
-import (
-	"errors"
+const (
+	WordNotFoundException      = DictErr("Word not found")
+	WordAlreadyExistsException = DictErr("Word already exists")
 )
 
-var (
-	WordNotFoundException      = errors.New("Word not found")
-	WordAlreadyExistsException = errors.New("Word already exists")
-)
+type DictErr string
+
+func (e DictErr) Error() string {
+	return string(e)
+}
 
 func Search(dict map[string]string, k string) string {
 	return dict[k]
@@ -36,4 +38,12 @@ func (d Dict) Add(k, v string) error {
 	}
 
 	return nil
+}
+
+func (d Dict) Update(key, value string) {
+	d[key] = value
+}
+
+func (d Dict) Delete(key string) {
+	delete(d, key)
 }
